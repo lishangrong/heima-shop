@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { useMemberStore } from '@/stores'
+import { http } from '@/utils/http'
 
 const memberStore = useMemberStore()
+const getData = async () => {
+  const res = await http<string[]>({
+    url: '/member/profile',
+    method: 'GET',
+  })
+  console.info('请求成功', res)
+}
 </script>
 
 <template>
@@ -11,6 +19,7 @@ const memberStore = useMemberStore()
       @tap="
         memberStore.setProfile({
           nickname: '黑马先锋',
+          token: '123456',
         })
       "
       size="mini"
@@ -20,6 +29,7 @@ const memberStore = useMemberStore()
       保存用户信息
     </button>
     <button @tap="memberStore.clearProfile()" size="mini" plain type="warn">清理用户信息</button>
+    <button @tap="getData" size="mini" plain type="primary">获取数据</button>
   </view>
 </template>
 
