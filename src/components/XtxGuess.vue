@@ -4,11 +4,14 @@ import { onMounted, ref } from 'vue'
 import type { GuessItem } from '@/types/home'
 import type { PageParams } from '@/types/global'
 
+// 分页参数
 const pageParams: Required<PageParams> = {
   page: 30,
   pageSize: 10,
 }
+// 结束标识
 const finish = ref(false)
+// 猜你喜欢列表
 const guessList = ref<GuessItem[]>([])
 const getHomeGoodsGuessLikeData = async () => {
   if (finish.value) {
@@ -25,6 +28,12 @@ const getHomeGoodsGuessLikeData = async () => {
     finish.value = true
   }
 }
+// 重置数据
+const resetData = () => {
+  pageParams.page = 1
+  finish.value = false
+  guessList.value = []
+}
 onMounted(() => {
   getHomeGoodsGuessLikeData()
 })
@@ -32,6 +41,7 @@ onMounted(() => {
 // 暴露方法
 defineExpose({
   getMore: getHomeGoodsGuessLikeData,
+  resetData,
 })
 //
 </script>

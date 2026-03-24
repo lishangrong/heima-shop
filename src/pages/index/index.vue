@@ -41,7 +41,14 @@ const isTrigger = ref(false)
 const onRefresh = async () => {
   console.log('自定义下拉刷新被触发')
   isTrigger.value = true
-  await Promise.all([getHomeBannerData(), getHomeCategoryData(), getHomeHotData()])
+  // 重置猜你喜欢列表
+  guessRef.value?.resetData()
+  await Promise.all([
+    getHomeBannerData(),
+    getHomeCategoryData(),
+    getHomeHotData(),
+    guessRef.value?.getMore(),
+  ])
 
   isTrigger.value = false
 }
