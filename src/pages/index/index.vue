@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import CustomNavbar from './components/CustomNavbar.vue'
 import CategoryPanel from './components/CategoryPanel.vue'
 import HotPanel from './components/HotPanel.vue'
 import { getHomeBannerAPI, getHomeCategoryAPI, getHomeHotAPI } from '@/services/home'
 import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
-import { ref } from 'vue'
+import type { XtxGuessInstance } from '@/types/component'
 
 const bannerList = ref<BannerItem[]>([])
 const getHomeBannerData = async () => {
@@ -30,12 +31,18 @@ onLoad(() => {
   getHomeCategoryData()
   getHomeHotData()
 })
+
+const guessRef = ref<XtxGuessInstance>()
+const onScrollToLower = () => {
+  console.log('滚动到底部')
+  guessRef.value?.getMore()
+}
 </script>
 
 <template>
   <!-- 自定义导航栏 -->
   <CustomNavbar />
-  <scroll-view class="scroll-view" scroll-y>
+  <scroll-view @scrolltolower="onScrollToLower" class="scroll-view" scroll-y>
     <!-- 自定义轮播图 -->
     <XtxSwiper :list="bannerList" />
     <!-- 分类面板 -->
@@ -43,7 +50,7 @@ onLoad(() => {
     <!-- 推荐专区 -->
     <HotPanel :list="hotList" />
     <!-- 猜你喜欢 -->
-    <XtxGuess />
+    <XtxGuess ref="guessRef" />
   </scroll-view>
 </template>
 
