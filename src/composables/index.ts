@@ -7,10 +7,11 @@ import { ref } from 'vue'
  */
 export const useGuessList = () => {
   const guessRef = ref<XtxGuessInstance>()
+
   const onScrollToLower = () => {
-    console.log('滚动到底部')
     guessRef.value?.getMore()
   }
+
   return {
     guessRef,
     onScrollToLower,

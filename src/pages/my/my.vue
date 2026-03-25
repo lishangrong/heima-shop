@@ -12,7 +12,7 @@ const orderTypes = [
   { type: 4, text: '待评价', icon: 'icon-comment' },
 ]
 const memberStore = useMemberStore()
-const { onScrollToLower } = useGuessList()
+const { guessRef, onScrollToLower } = useGuessList()
 </script>
 
 <template>
