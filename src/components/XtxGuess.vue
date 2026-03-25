@@ -6,7 +6,7 @@ import type { PageParams } from '@/types/global'
 
 // 分页参数
 const pageParams: Required<PageParams> = {
-  page: 30,
+  page: import.meta.env.DEV ? 30 : 1,
   pageSize: 10,
 }
 // 结束标识
