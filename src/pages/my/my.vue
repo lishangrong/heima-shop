@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useGuessList } from '@/composables'
 import { useMemberStore } from '@/stores/modules/member'
 
 // 获取屏幕边界到安全区域距离
@@ -11,10 +12,11 @@ const orderTypes = [
   { type: 4, text: '待评价', icon: 'icon-comment' },
 ]
 const memberStore = useMemberStore()
+const { onScrollToLower } = useGuessList()
 </script>
 
 <template>
-  <scroll-view class="viewport" scroll-y enable-back-to-top>
+  <scroll-view @scrolltolower="onScrollToLower" class="viewport" scroll-y enable-back-to-top>
     <!-- 个人资料 -->
     <view class="profile" :style="{ paddingTop: safeAreaInsets!.top + 'px' }">
       <!-- 情况1：已登录 -->

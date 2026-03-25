@@ -7,7 +7,7 @@ import HotPanel from './components/HotPanel.vue'
 import PageSkeleton from './components/PageSkeleton.vue'
 import { getHomeBannerAPI, getHomeCategoryAPI, getHomeHotAPI } from '@/services/home'
 import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
-import type { XtxGuessInstance } from '@/types/component'
+import { useGuessList } from '@/composables'
 
 const bannerList = ref<BannerItem[]>([])
 const getHomeBannerData = async () => {
@@ -39,11 +39,7 @@ onLoad(async () => {
   isLoading.value = false
 })
 
-const guessRef = ref<XtxGuessInstance>()
-const onScrollToLower = () => {
-  console.log('滚动到底部')
-  guessRef.value?.getMore()
-}
+const { guessRef, onScrollToLower } = useGuessList()
 const isTrigger = ref(false)
 const onRefresh = async () => {
   console.log('自定义下拉刷新被触发')
