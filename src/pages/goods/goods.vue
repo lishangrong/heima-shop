@@ -13,7 +13,6 @@ const goods = ref<GoodsResult>()
 const getGoodsByIdData = async () => {
   const res = await getGoodsByIdAPI(query.id)
   goods.value = res.result
-  console.log(res.result)
 }
 
 onLoad(() => {
@@ -33,6 +32,10 @@ const previewImage = (url: string) => {
     current: url,
   })
 }
+const popup = ref<{
+  open: (type?: UniHelper.UniPopupType) => void
+  close: () => void
+}>()
 </script>
 
 <template>
@@ -73,7 +76,7 @@ const previewImage = (url: string) => {
           <text class="label">送至</text>
           <text class="text ellipsis"> 请选择收获地址 </text>
         </view>
-        <view class="item arrow">
+        <view @tap="popup?.open('bottom')" class="item arrow" hover-class="none">
           <text class="label">服务</text>
           <text class="text ellipsis"> 无忧退 快速退款 免费包邮 </text>
         </view>
@@ -143,6 +146,12 @@ const previewImage = (url: string) => {
       <view class="buynow"> 立即购买 </view>
     </view>
   </view>
+  <!-- uni-ui-popup -->
+  <uni-popup ref="popup" type="bottom" background-color="#fff">
+    <view>内容1</view>
+    <view>内容2</view>
+    <button @tap="popup?.close()">关闭弹出层</button>
+  </uni-popup>
 </template>
 
 <style lang="scss">
