@@ -23,6 +23,7 @@ const subType = ref<(SubTypeItem & { isFinish?: boolean })[]>([])
 const activeIdex = ref(0)
 const getHotRecommondData = async () => {
   const res = await getHotRecommendAPI(currentUrlMap!.url, {
+    // 开发环境修改默认页面方便测试
     page: import.meta.env.DEV ? 30 : 1,
     pageSize: 10,
   })
