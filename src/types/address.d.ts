@@ -18,7 +18,7 @@ export type AddressParams = {
 
 export type AddressItem = AddressParams & {
   /** 地址id */
-  id: number
+  id: string
   /** 完整地址 */
   fullLocation: string
 }
