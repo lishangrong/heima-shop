@@ -50,15 +50,16 @@ const onAvatarChange = () => {
 }
 
 const onSubmit = async () => {
-  const [provinceCode, cityCode, countyCode] = profile.value!.fullLocation?.split(' ') || []
+  const { nickname, gender, birthday, fullLocation, profession } = profile.value!
+  const [provinceCode, cityCode, countyCode] = fullLocationCode
   const res = await putMemberProfileAPI({
-    nickname: profile.value!.nickname,
-    gender: profile.value!.gender,
-    // birthday: profile.value!.birthday,
-    // profession: profile.value!.profession,
-    // provinceCode,
-    // cityCode,
-    // countyCode,
+    nickname,
+    gender,
+    birthday,
+    profession,
+    provinceCode,
+    cityCode,
+    countyCode,
   })
   // 更新store中的个人信息
   memberStore.profile!.nickname = res.result.nickname
@@ -70,6 +71,19 @@ const onSubmit = async () => {
 // 修改性别
 const onGenderChange: UniHelper.RadioGroupOnChange = (e: any) => {
   profile.value!.gender = e.detail.value
+}
+// 修改生日
+const onBirthdayChange: UniHelper.DatePickerOnChange = (e) => {
+  profile.value!.birthday = e.detail.value
+}
+// 修改城市
+let fullLocationCode: [string, string, string] = ['', '', '']
+const onCityChange: UniHelper.RegionPickerOnChange = (e) => {
+  console.log(e.detail)
+  // 修改前端界面
+  profile.value!.fullLocation = e.detail.value.join(' ')
+  // 提交后端使用
+  fullLocationCode = e.detail.code!
 }
 </script>
 
@@ -120,6 +134,7 @@ const onGenderChange: UniHelper.RadioGroupOnChange = (e: any) => {
             start="1900-01-01"
             :end="new Date()"
             :value="profile?.birthday"
+            @change="onBirthdayChange"
           >
             <view v-if="profile?.birthday">{{ profile?.birthday }}</view>
             <view class="placeholder" v-else>请选择日期</view>
@@ -127,14 +142,19 @@ const onGenderChange: UniHelper.RadioGroupOnChange = (e: any) => {
         </view>
         <view class="form-item">
           <text class="label">城市</text>
-          <picker class="picker" mode="region" :value="profile?.fullLocation?.split(' ')">
+          <picker
+            @change="onCityChange"
+            class="picker"
+            mode="region"
+            :value="profile?.fullLocation?.split(' ')"
+          >
             <view v-if="profile?.fullLocation">{{ profile?.fullLocation }}</view>
             <view class="placeholder" v-else>请选择城市</view>
           </picker>
         </view>
         <view class="form-item">
           <text class="label">职业</text>
-          <input class="input" type="text" placeholder="请填写职业" :value="profile?.profession" />
+          <input class="input" type="text" placeholder="请填写职业" v-model="profile!.profession" />
         </view>
       </view>
       <!-- 提交按钮 -->
