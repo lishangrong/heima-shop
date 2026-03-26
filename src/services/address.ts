@@ -24,3 +24,29 @@ export const getMemberAddressAPI = () => {
     method: 'GET',
   })
 }
+
+/**
+ * 获取收货地址详情
+ * @param id 地址id
+ * @returns
+ */
+export const getMemberAddressByIdAPI = (id: string) => {
+  return http<AddressItem>({
+    url: `/member/address/${id}`,
+    method: 'GET',
+  })
+}
+
+/**
+ * 更新收货地址
+ * @param id 地址id
+ * @param data 更新参数
+ * @returns
+ */
+export const putMemberAddressByIdAPI = (id: string, data: AddressParams) => {
+  return http({
+    url: `/member/address/${id}`,
+    method: 'PUT',
+    data,
+  })
+}
