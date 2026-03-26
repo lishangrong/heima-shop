@@ -53,7 +53,7 @@ const onSubmit = async () => {
   const [provinceCode, cityCode, countyCode] = profile.value!.fullLocation?.split(' ') || []
   const res = await putMemberProfileAPI({
     nickname: profile.value!.nickname,
-    // gender: profile.value!.gender,
+    gender: profile.value!.gender,
     // birthday: profile.value!.birthday,
     // profession: profile.value!.profession,
     // provinceCode,
@@ -66,6 +66,10 @@ const onSubmit = async () => {
   setTimeout(() => {
     uni.navigateBack()
   }, 500)
+}
+// 修改性别
+const onGenderChange: UniHelper.RadioGroupOnChange = (e: any) => {
+  profile.value!.gender = e.detail.value
 }
 </script>
 
@@ -97,7 +101,7 @@ const onSubmit = async () => {
         </view>
         <view class="form-item">
           <text class="label">性别</text>
-          <radio-group>
+          <radio-group @change="onGenderChange">
             <label class="radio">
               <radio value="男" color="#27ba9b" :checked="profile?.gender === '男'" />
               男
