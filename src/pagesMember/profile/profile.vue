@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { getMemberProfileAPI } from '@/services/profile'
+import { getMemberProfileAPI, putMemberProfileAPI } from '@/services/profile'
+import { useMemberStore } from '@/stores'
 import type { ProfileDetail } from '@/types/member'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
-// 个人信息 用户详情信息
-const profile = ref<ProfileDetail>()
+// 个人信息 用户详情信息,修改个人信息需要提供初始值
+const profile = ref({} as ProfileDetail)
 const getMemberProfileData = async () => {
   const res = await getMemberProfileAPI()
   profile.value = res.result
@@ -15,6 +16,57 @@ const getMemberProfileData = async () => {
 onLoad(() => {
   getMemberProfileData()
 })
+
+const memberStore = useMemberStore()
+// 修改头像
+const onAvatarChange = () => {
+  // 调用拍照/选择图片接口
+  uni.chooseMedia({
+    // 选择图片数量
+    count: 1,
+    // 选择文件类型
+    mediaType: ['image'],
+    success: (res) => {
+      const { tempFilePath } = res.tempFiles[0]
+      // 文件上传
+      uni.uploadFile({
+        url: '/member/profile/avatar',
+        filePath: tempFilePath,
+        name: 'file',
+        success: (res) => {
+          if (res.statusCode === 200) {
+            const avatar = JSON.parse(res.data).result.avatar
+            profile.value!.avatar = avatar
+            // 更新store中的头像
+            memberStore.profile!.avatar = avatar
+            uni.showToast({ title: '头像更新成功', icon: 'success' })
+          } else {
+            uni.showToast({ title: '出现错误', icon: 'error' })
+          }
+        },
+      })
+    },
+  })
+}
+
+const onSubmit = async () => {
+  const [provinceCode, cityCode, countyCode] = profile.value!.fullLocation?.split(' ') || []
+  const res = await putMemberProfileAPI({
+    nickname: profile.value!.nickname,
+    // gender: profile.value!.gender,
+    // birthday: profile.value!.birthday,
+    // profession: profile.value!.profession,
+    // provinceCode,
+    // cityCode,
+    // countyCode,
+  })
+  // 更新store中的个人信息
+  memberStore.profile!.nickname = res.result.nickname
+  uni.showToast({ title: '保存成功', icon: 'success' })
+  setTimeout(() => {
+    uni.navigateBack()
+  }, 500)
+}
 </script>
 
 <template>
@@ -26,7 +78,7 @@ onLoad(() => {
     </view>
     <!-- 头像 -->
     <view class="avatar">
-      <view class="avatar-content">
+      <view @tap="onAvatarChange" class="avatar-content">
         <image class="image" :src="profile?.avatar" mode="aspectFill" />
         <text class="text">点击修改头像</text>
       </view>
@@ -41,7 +93,7 @@ onLoad(() => {
         </view>
         <view class="form-item">
           <text class="label">昵称</text>
-          <input class="input" type="text" placeholder="请填写昵称" :value="profile?.nickname" />
+          <input class="input" type="text" placeholder="请填写昵称" v-model="profile!.nickname" />
         </view>
         <view class="form-item">
           <text class="label">性别</text>
@@ -82,7 +134,7 @@ onLoad(() => {
         </view>
       </view>
       <!-- 提交按钮 -->
-      <button class="form-button">保 存</button>
+      <button @tap="onSubmit" class="form-button">保 存</button>
     </view>
   </view>
 </template>
