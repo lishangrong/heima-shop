@@ -2,6 +2,7 @@
 import { useGuessList } from '@/composables'
 import { OrderState, orderStateList } from '@/services/constants'
 import { getMemberOrderByIdAPI } from '@/services/order'
+import { getPayMockAPI, getPayWxMiniPayAPI } from '@/services/pay'
 import type { OrderResult } from '@/types/order'
 import { onLoad, onReady } from '@dcloudio/uni-app'
 import { ref } from 'vue'
@@ -80,6 +81,19 @@ onLoad(() => {
 const onTimeup = () => {
   order.value!.orderState = OrderState.YiQuXiao
 }
+
+// 去支付
+const onOrderPay = async () => {
+  // 开发环境-模拟支付
+  if (import.meta.env.DEV) {
+    await getPayMockAPI({ orderId: query.id })
+  } else {
+    const res = await getPayWxMiniPayAPI({ orderId: query.id })
+    wx.requestPayment(res.result)
+  }
+  // 关闭当前页，跳转页面
+  uni.redirectTo({ url: '/pagesOrder/payment/payment?id=' + query.id })
+}
 </script>
 
 <template>
@@ -115,7 +129,7 @@ const onTimeup = () => {
               @timeup="onTimeup"
             />
           </view>
-          <view class="button">去支付</view>
+          <view class="button" @tap="onOrderPay">去支付</view>
         </template>
         <!-- 其他订单状态:展示再次购买按钮 -->
         <template v-else>
