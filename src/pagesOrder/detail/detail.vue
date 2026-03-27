@@ -4,10 +4,11 @@ import { OrderState, orderStateList } from '@/services/constants'
 import {
   getMemberOrderByIdAPI,
   getMemberOrderConsignmentByIdAPI,
+  getMemberOrderLogisticsByIdAPI,
   putMemberOrderReceiptByIdAPI,
 } from '@/services/order'
 import { getPayMockAPI, getPayWxMiniPayAPI } from '@/services/pay'
-import type { OrderResult } from '@/types/order'
+import type { LogisticItem, OrderResult } from '@/types/order'
 import { onLoad, onReady } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 
@@ -76,7 +77,21 @@ const order = ref<OrderResult>()
 const getMemberOrderByIdData = async () => {
   const res = await getMemberOrderByIdAPI(query.id)
   order.value = res.result
+  if (
+    [OrderState.DaiShouHuo, OrderState.DaiPingJia, OrderState.YiWanCheng].includes(
+      order.value!.orderState,
+    )
+  ) {
+    getOrderLogistics()
+  }
 }
+// 获取物流信息
+const logistics = ref<LogisticItem[]>([])
+const getOrderLogistics = async () => {
+  const res = await getMemberOrderLogisticsByIdAPI(query.id)
+  logistics.value = res.result.list
+}
+
 onLoad(() => {
   getMemberOrderByIdData()
 })
@@ -110,6 +125,7 @@ const onOrderSend = async () => {
     order.value!.orderState = OrderState.DaiShouHuo
   }
 }
+// 确认收货
 const onOrderConfirm = () => {
   uni.showModal({
     content: '为了保障您的权益，请收到货后并确认无误后，再确认收货',
@@ -192,16 +208,16 @@ const onOrderConfirm = () => {
       <!-- 配送状态 -->
       <view class="shipment">
         <!-- 订单物流信息 -->
-        <view v-for="item in 1" :key="item" class="item">
+        <view v-for="item in logistics" :key="item.id" class="item">
           <view class="message">
-            您已在广州市天河区黑马程序员完成取件，感谢使用菜鸟驿站，期待再次为您服务。
+            {{ item.text }}
           </view>
-          <view class="date"> 2023-04-14 13:14:20 </view>
+          <view class="date"> {{ item.time }} </view>
         </view>
         <!-- 用户收货地址 -->
         <view class="locate">
-          <view class="user"> 张三 13333333333 </view>
-          <view class="address"> 广东省 广州市 天河区 黑马程序员 </view>
+          <view class="user"> {{ order.receiverContact }} {{ order.receiverMobile }} </view>
+          <view class="address"> {{ order.receiverAddress }} </view>
         </view>
       </view>
 
