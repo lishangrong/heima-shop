@@ -24,3 +24,16 @@ export const getMemberCartAPI = () => {
     method: 'GET',
   })
 }
+
+/**
+ * 删除购物车商品
+ * @param data 请求体参数 ids SKUID 集合
+ * @returns
+ */
+export const deleteMemberCartAPI = (data: { ids: string[] }) => {
+  return http({
+    url: `/member/cart`,
+    method: 'DELETE',
+    data,
+  })
+}
