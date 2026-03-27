@@ -115,6 +115,7 @@ const onBuyNow = async (ev: SkuPopupEvent) => {
   uni.navigateTo({
     url: `/pagesOrder/create/create?skuId=${ev._id}&count=${ev.buy_num}`,
   })
+  isShowSku.value = false
 }
 </script>
 
