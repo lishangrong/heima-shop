@@ -34,15 +34,25 @@ onLoad(() => {
 
 // 动态设置标题
 uni.setNavigationBarTitle({ title: query.id ? '修改地址' : '新增地址' })
+// #ifdef MP-WEIXIN
 // 地区选择器改变事件
 const onRegionChange: UniHelper.RegionPickerOnChange = (e) => {
-  console.log(e.detail)
   // 前端展示区
   form.value.fullLocation = e.detail.value.join(' ')
   // 后端参数区
   const [provinceCode, cityCode, countyCode] = e.detail.code!
   Object.assign(form.value, { provinceCode, cityCode, countyCode })
 }
+// #endif
+
+// #ifdef APP-PLUS || H5
+const onCityChange: UniHelper.UniDataPickerOnChange = (e) => {
+  // 省市区（后端参数）
+  const [provinceCode, cityCode, countyCode] = e.detail.value.map((v) => v.value)
+  Object.assign(form.value, { provinceCode, cityCode, countyCode })
+}
+// #endif
+
 // 默认地址开关改变事件
 const onSwitchChange: UniHelper.SwitchOnChange = (e) => {
   form.value.isDefault = e.detail.value ? 1 : 0
@@ -59,7 +69,7 @@ const rules: UniHelper.UniFormsRules = {
       { pattern: /^1[3-9]\d{9}$/, errorMessage: '手机号码格式不正确' },
     ],
   },
-  fullLocation: {
+  countyCode: {
     rules: [{ required: true, errorMessage: '请选择所在地区' }],
   },
   address: {
@@ -102,8 +112,9 @@ const onSubmit = async () => {
         <text class="label">手机号码</text>
         <input class="input" placeholder="请填写收货人手机号码" v-model="form.contact" />
       </uni-forms-item>
-      <uni-forms-item name="fullLocation" class="form-item">
+      <uni-forms-item name="countyCode" class="form-item">
         <text class="label">所在地区</text>
+        <!-- #ifdef MP-WEIXIN -->
         <picker
           @change="onRegionChange"
           class="picker"
@@ -113,6 +124,23 @@ const onSubmit = async () => {
           <view v-if="form.fullLocation">{{ form.fullLocation }}</view>
           <view v-else class="placeholder">请选择省/市/区(县)</view>
         </picker>
+        <!-- #endif -->
+        <!-- #ifdef H5 || APP-PLUS -->
+        <uni-data-picker
+          placeholder="请选择地址"
+          popup-title="请选择城市"
+          collection="opendb-city-china"
+          field="code as value, name as text"
+          orderby="value asc"
+          :step-searh="true"
+          self-field="code"
+          parent-field="parent_code"
+          :clear-icon="false"
+          @change="onCityChange"
+          v-model="form.countyCode"
+        >
+        </uni-data-picker>
+        <!-- #endif -->
       </uni-forms-item>
       <uni-forms-item name="address" class="form-item">
         <text class="label">详细地址</text>
@@ -134,6 +162,12 @@ const onSubmit = async () => {
 </template>
 
 <style lang="scss">
+/* #ifdef H5 || APP-PLUS */
+:deep(.selected-area) {
+  height: auto;
+  flex: 0 1 auto;
+}
+/* #endif */
 page {
   background-color: #f4f4f4;
 }
