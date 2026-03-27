@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-// 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 // tabs 数据
 const orderTabs = ref([
@@ -12,7 +11,10 @@ const orderTabs = ref([
   { orderState: 4, title: '待评价' },
 ])
 
-const activeIndex = ref(0)
+const query = defineProps<{
+  type: string
+}>()
+const activeIndex = ref(orderTabs.value.findIndex((item) => item.orderState === Number(query.type)))
 </script>
 
 <template>
