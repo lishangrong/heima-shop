@@ -164,10 +164,12 @@
 
 <style lang="scss">
 // H5端默认开启了scope，导致样式无效
+/* #ifdef H5 || APP-PLUS */
 @import '@/components/styles/XtxSwiper.scss';
 @import '@/components/styles/XtxGuess.scss';
 @import '../styles/CategoryPanel.scss';
 @import '../styles/HotPanel.scss';
+/* #endif */
 .sk-transparent {
   color: transparent !important;
 }
