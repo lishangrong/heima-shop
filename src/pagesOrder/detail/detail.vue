@@ -4,6 +4,7 @@ import { OrderState, orderStateList } from '@/services/constants'
 import {
   deleteMemberOrderAPI,
   getMemberOrderByIdAPI,
+  getMemberOrderCancelByIdAPI,
   getMemberOrderConsignmentByIdAPI,
   getMemberOrderLogisticsByIdAPI,
   putMemberOrderReceiptByIdAPI,
@@ -147,6 +148,20 @@ const onOrderDelete = async () => {
       if (res.confirm) {
         await deleteMemberOrderAPI({ ids: [query.id] })
         uni.showToast({ title: '删除成功', icon: 'success' })
+        uni.redirectTo({ url: '/pagesOrder/list/list' })
+      }
+    },
+  })
+}
+
+const onOrderCancel = async () => {
+  uni.showModal({
+    content: '确认取消订单吗？',
+    success: async (res) => {
+      if (res.confirm) {
+        console.log(reason.value)
+        await getMemberOrderCancelByIdAPI(query.id, { cancelReason: reason.value })
+        uni.showToast({ title: '取消成功', icon: 'success' })
         uni.redirectTo({ url: '/pagesOrder/list/list' })
       }
     },
@@ -352,7 +367,7 @@ const onOrderDelete = async () => {
       </view>
       <view class="footer">
         <view class="button" @tap="popup?.close?.()">取消</view>
-        <view class="button primary">确认</view>
+        <view class="button primary" @tap="onOrderCancel">确认</view>
       </view>
     </view>
   </uni-popup>
