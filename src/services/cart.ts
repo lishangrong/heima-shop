@@ -45,12 +45,22 @@ export const deleteMemberCartAPI = (data: { ids: string[] }) => {
  * @param data 更新商品信息
  * @returns
  */
-export const putMemberCartBySkuIdAPI = (
-  skuId: string,
-  data: { selected?: boolean; count: number },
-) => {
+export const putMemberCartBySkuIdAPI = (skuId: string, data: { selected?: boolean; count?: number }) => {
   return http({
     url: `/member/cart/${skuId}`,
+    method: 'PUT',
+    data,
+  })
+}
+
+/**
+ * 更新购物车商品选中状态
+ * @param data 请求体参数 selected 选中状态
+ * @returns
+ */
+export const putMemberCartSelectedAPI = (data: { selected: boolean }) => {
+  return http({
+    url: `/member/cart/selected`,
     method: 'PUT',
     data,
   })
