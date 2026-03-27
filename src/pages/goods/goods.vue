@@ -94,9 +94,7 @@ const openSkuPopup = (val: SkuMode) => {
     :localdata="localdata"
     :mode="mode"
     add-cart-background-color="#FFA868"
-    buy-now-background-color="#27BA98"
-    add-cart-text="加入购物车"
-    buy-now-text="立即购买"
+    buy-now-background-color="#27BA9B"
   />
   <scroll-view scroll-y class="viewport">
     <!-- 基本信息 -->
@@ -127,9 +125,9 @@ const openSkuPopup = (val: SkuMode) => {
 
       <!-- 操作面板 -->
       <view class="action">
-        <view class="item arrow">
+        <view class="item arrow" @tap="openSkuPopup(SkuMode.Both)">
           <text class="label">选择</text>
-          <text @tap="openSkuPopup(SkuMode.Both)" class="text ellipsis"> 请选择商品规格 </text>
+          <text class="text ellipsis"> 请选择商品规格 </text>
         </view>
         <view @tap="openPopup('address')" class="item arrow">
           <text class="label">送至</text>
