@@ -20,6 +20,7 @@ onLoad(() => {
 const memberStore = useMemberStore()
 // 修改头像
 const onAvatarChange = () => {
+  // #ifdef MP-WEIXIN
   // 调用拍照/选择图片接口
   uni.chooseMedia({
     // 选择图片数量
@@ -28,23 +29,37 @@ const onAvatarChange = () => {
     mediaType: ['image'],
     success: (res) => {
       const { tempFilePath } = res.tempFiles[0]
-      // 文件上传
-      uni.uploadFile({
-        url: '/member/profile/avatar',
-        filePath: tempFilePath,
-        name: 'file',
-        success: (res) => {
-          if (res.statusCode === 200) {
-            const avatar = JSON.parse(res.data).result.avatar
-            profile.value!.avatar = avatar
-            // 更新store中的头像
-            memberStore.profile!.avatar = avatar
-            uni.showToast({ title: '头像更新成功', icon: 'success' })
-          } else {
-            uni.showToast({ title: '出现错误', icon: 'error' })
-          }
-        },
-      })
+      uploadFile(tempFilePath)
+    },
+  })
+  // #endif
+  // #ifdef H5 || APP-PLUS
+  uni.chooseImage({
+    count: 1,
+    success: (res) => {
+      const tempfile = res.tempFilePaths[0]
+      uploadFile(tempfile)
+    },
+  })
+  // #endif
+}
+
+const uploadFile = (tempFilePath: string) => {
+  // 文件上传
+  uni.uploadFile({
+    url: '/member/profile/avatar',
+    filePath: tempFilePath,
+    name: 'file',
+    success: (res) => {
+      if (res.statusCode === 200) {
+        const avatar = JSON.parse(res.data).result.avatar
+        profile.value!.avatar = avatar
+        // 更新store中的头像
+        memberStore.profile!.avatar = avatar
+        uni.showToast({ title: '头像更新成功', icon: 'success' })
+      } else {
+        uni.showToast({ title: '出现错误', icon: 'error' })
+      }
     },
   })
 }
