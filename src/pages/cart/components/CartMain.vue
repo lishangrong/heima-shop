@@ -90,7 +90,10 @@ const gotoPayment = () => {
       icon: 'none',
     })
   }
-  // 跳转到结算页面 TODO
+  // 跳转到结算页面
+  uni.navigateTo({
+    url: '/pagesOrder/create/create',
+  })
 }
 
 // 猜你喜欢
