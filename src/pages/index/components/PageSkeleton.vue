@@ -162,7 +162,12 @@
   </view>
 </template>
 
-<style>
+<style lang="scss">
+// H5端默认开启了scope，导致样式无效
+@import '@/components/styles/XtxSwiper.scss';
+@import '@/components/styles/XtxGuess.scss';
+@import '../styles/CategoryPanel.scss';
+@import '../styles/HotPanel.scss';
 .sk-transparent {
   color: transparent !important;
 }
