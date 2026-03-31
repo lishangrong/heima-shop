@@ -1,3 +1,5 @@
+import { getMemberAddressAPI } from '@/services/address'
+import type { AddressItem } from '@/types/address'
 import type { XtxGuessInstance } from '@/types/component'
 import { ref } from 'vue'
 
@@ -15,5 +17,21 @@ export const useGuessList = () => {
   return {
     guessRef,
     onScrollToLower,
+  }
+}
+
+/**
+ * 收货地址列表-组合式函数
+ */
+export const useAddress = () => {
+  // 收货地址列表
+  const addressList = ref<AddressItem[]>([])
+  const getMemberAddressList = async () => {
+    const res = await getMemberAddressAPI()
+    addressList.value = res.result
+  }
+  return {
+    addressList,
+    getMemberAddressList,
   }
 }

@@ -1,9 +1,40 @@
 <script setup lang="ts">
-//
+import { useAddress } from '@/composables/index'
+import { useAdressStore } from '@/stores'
+import type { AddressItem } from '@/types/address'
+import { computed, onMounted } from 'vue'
 
 const emit = defineEmits<{
   (event: 'close'): void
 }>()
+
+// 收货地址列表-组合式函数
+const { addressList, getMemberAddressList } = useAddress()
+
+const addressStore = useAdressStore()
+
+const selectedAddress = computed(
+  () => addressStore.selectedAddress || addressList.value.find((v) => v.isDefault),
+)
+
+const onChangeAddress = (item: AddressItem) => {
+  addressStore.changeSelectedAddress(item)
+}
+
+const onAddressConfirm = () => {
+  emit('close')
+}
+
+onMounted(() => {
+  getMemberAddressList()
+})
+
+const onAddAddress = () => {
+  uni.navigateTo({
+    url: '/pagesMember/address-form/address-form',
+  })
+  emit('close')
+}
 </script>
 
 <template>
@@ -14,25 +45,15 @@ const emit = defineEmits<{
     <view class="title">配送至</view>
     <!-- 内容 -->
     <view class="content">
-      <view class="item">
-        <view class="user">李明 13824686868</view>
-        <view class="address">北京市顺义区后沙峪地区安平北街6号院</view>
-        <text class="icon icon-checked"></text>
-      </view>
-      <view class="item">
-        <view class="user">王东 13824686868</view>
-        <view class="address">北京市顺义区后沙峪地区安平北街6号院</view>
-        <text class="icon icon-ring"></text>
-      </view>
-      <view class="item">
-        <view class="user">张三 13824686868</view>
-        <view class="address">北京市朝阳区孙河安平北街6号院</view>
-        <text class="icon icon-ring"></text>
+      <view class="item" v-for="item in addressList" :key="item.id" @tap="onChangeAddress(item)">
+        <view class="user">{{ item.receiver }} {{ item.contact }}</view>
+        <view class="address">{{ item.fullLocation }}</view>
+        <text class="icon" :class="{ 'icon-checked': selectedAddress!.id === item.id }"></text>
       </view>
     </view>
     <view class="footer">
-      <view class="button primary"> 新建地址 </view>
-      <view v-if="false" class="button primary">确定</view>
+      <view class="button primary" @tap="onAddAddress"> 新建地址 </view>
+      <view class="button primary" @tap="onAddressConfirm">确定</view>
     </view>
   </view>
 </template>

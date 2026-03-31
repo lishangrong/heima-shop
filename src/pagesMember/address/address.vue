@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { deleteMemberAddressByIdAPI, getMemberAddressAPI } from '@/services/address'
+import { deleteMemberAddressByIdAPI } from '@/services/address'
 import { useAdressStore } from '@/stores'
 import type { AddressItem } from '@/types/address'
 import { onShow } from '@dcloudio/uni-app'
-import { ref } from 'vue'
+import { useAddress } from '@/composables/index'
 
 // 收货地址列表
-const addressList = ref<AddressItem[]>([])
-const getMemberAddressList = async () => {
-  const res = await getMemberAddressAPI()
-  addressList.value = res.result
-  console.log(res)
-}
+const { addressList, getMemberAddressList } = useAddress()
+
 // 页面显示时获取地址列表
 onShow(() => {
   getMemberAddressList()
