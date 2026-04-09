@@ -2,7 +2,7 @@
 import { useAddress } from '@/composables/index'
 import { useAdressStore } from '@/stores'
 import type { AddressItem } from '@/types/address'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const emit = defineEmits<{
   (event: 'close'): void
@@ -10,18 +10,11 @@ const emit = defineEmits<{
 
 // 收货地址列表-组合式函数
 const { addressList, getMemberAddressList } = useAddress()
+const activeIndex = ref(0)
 
 const addressStore = useAdressStore()
-
-const selectedAddress = computed(
-  () => addressStore.selectedAddress || addressList.value.find((v) => v.isDefault),
-)
-
-const onChangeAddress = (item: AddressItem) => {
-  addressStore.changeSelectedAddress(item)
-}
-
 const onAddressConfirm = () => {
+  addressStore.changeSelectedAddress(addressList.value[activeIndex.value])
   emit('close')
 }
 
@@ -45,10 +38,15 @@ const onAddAddress = () => {
     <view class="title">配送至</view>
     <!-- 内容 -->
     <view class="content">
-      <view class="item" v-for="item in addressList" :key="item.id" @tap="onChangeAddress(item)">
+      <view
+        class="item"
+        v-for="(item, index) in addressList"
+        :key="item.id"
+        @tap="activeIndex = index"
+      >
         <view class="user">{{ item.receiver }} {{ item.contact }}</view>
         <view class="address">{{ item.fullLocation }}</view>
-        <text class="icon" :class="{ 'icon-checked': selectedAddress!.id === item.id }"></text>
+        <text class="icon" :class="{ 'icon-checked': activeIndex === index }"></text>
       </view>
     </view>
     <view class="footer">
