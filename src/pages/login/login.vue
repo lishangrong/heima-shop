@@ -3,6 +3,10 @@ import { postLoginWxMinAPI, postLoginWxMinSimpleAPI } from '@/services/login'
 import { onLoad } from '@dcloudio/uni-app'
 import { useMemberStore } from '@/stores/modules/member'
 import type { LoginResult } from '@/types/member'
+import { ref } from 'vue'
+
+// 手机号
+const phoneNumber = ref('')
 
 // #ifdef MP-WEIXIN
 // 获取Code 登录凭证
@@ -25,9 +29,18 @@ const onGetPhoneNumber: UniHelper.ButtonOnGetphonenumber = async (e) => {
 }
 // #endif
 
-// 模拟登录（开发环境）
-const onLoginSimple = async () => {
-  const res = await postLoginWxMinSimpleAPI('13581754656')
+// 手机号登录
+const onPhoneLogin = async () => {
+  // 校验手机号格式
+  const phoneReg = /^1[3-9]\d{9}$/
+  if (!phoneReg.test(phoneNumber.value)) {
+    uni.showToast({
+      title: '请输入正确的手机号',
+      icon: 'none',
+    })
+    return
+  }
+  const res = await postLoginWxMinSimpleAPI(phoneNumber.value)
   loginSucess(res.result)
 }
 
@@ -72,10 +85,15 @@ const loginSucess = (profile: LoginResult) => {
           <text>其他登录方式</text>
         </view>
         <view class="options">
-          <!-- 通用模拟登录 -->
-          <button @tap="onLoginSimple">
-            <text class="icon icon-phone">模拟快捷登录</text>
-          </button>
+          <!-- 手机号登录 -->
+          <input
+            class="phone-input"
+            type="number"
+            v-model="phoneNumber"
+            placeholder="请输入手机号"
+            maxlength="11"
+          />
+          <button class="button phone" @tap="onPhoneLogin">登录</button>
         </view>
       </view>
       <view class="tips">登录/注册即视为你同意《服务条款》和《小兔鲜儿隐私协议》</view>
@@ -165,12 +183,24 @@ page {
 
     .options {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       margin-top: 70rpx;
+      .phone-input {
+        width: 100%;
+        height: 80rpx;
+        font-size: 28rpx;
+        border-radius: 72rpx;
+        border: 1px solid #ddd;
+        padding-left: 30rpx;
+        margin-bottom: 20rpx;
+      }
       button {
         padding: 0;
         background-color: transparent;
+        &.phone {
+          background-color: #28bb9c;
+        }
       }
     }
 
