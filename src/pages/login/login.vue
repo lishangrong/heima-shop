@@ -1,8 +1,29 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { postLoginWxMinAPI, postLoginWxMinSimpleAPI } from '@/services/login'
 import { onLoad } from '@dcloudio/uni-app'
 import { useMemberStore } from '@/stores/modules/member'
 import type { LoginResult } from '@/types/member'
+
+// 手机号输入
+const phoneNumber = ref('')
+
+// 校验手机号格式（11位，以1开头）
+const isValidPhone = (phone: string) => /^1[3-9]\d{9}$/.test(phone)
+
+// 手机号登录
+const onPhoneLogin = async () => {
+  if (!isValidPhone(phoneNumber.value)) {
+    uni.showModal({
+      title: '提示',
+      content: '请输入正确的手机号',
+      showCancel: false,
+    })
+    return
+  }
+  const res = await postLoginWxMinSimpleAPI(phoneNumber.value)
+  loginSucess(res.result)
+}
 
 // #ifdef MP-WEIXIN
 // 获取Code 登录凭证
@@ -70,6 +91,16 @@ const loginSucess = (profile: LoginResult) => {
       <view class="extra">
         <view class="caption">
           <text>其他登录方式</text>
+        </view>
+        <view class="phone-login">
+          <input
+            v-model="phoneNumber"
+            class="input"
+            type="number"
+            maxlength="11"
+            placeholder="请输入手机号"
+          />
+          <button class="button phone" @tap="onPhoneLogin">登录</button>
         </view>
         <view class="options">
           <!-- 通用模拟登录 -->
@@ -160,6 +191,27 @@ page {
         position: absolute;
         top: -12rpx;
         left: 50%;
+      }
+    }
+
+    .phone-login {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 40rpx;
+
+      .input {
+        width: 100%;
+        height: 80rpx;
+        font-size: 28rpx;
+        border-radius: 72rpx;
+        border: 1px solid #ddd;
+        padding-left: 30rpx;
+        margin-bottom: 20rpx;
+      }
+
+      .button {
+        width: 100%;
       }
     }
 
